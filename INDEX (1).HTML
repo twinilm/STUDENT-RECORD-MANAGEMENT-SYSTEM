@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Student Portal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- External CSS -->
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div id="app">
+
+    <!-- LOGIN PAGE -->
+    <section id="login-page" class="page">
+        <div class="card card-login">
+            <h1 class="app-title">Student Portal</h1>
+            <p class="app-subtitle">Mini Project – Marks, Fees & Timetable</p>
+
+            <form id="login-form">
+                <label class="field-label" for="username">Roll / Username</label>
+                <input
+                    type="text"
+                    id="username"
+                    class="field-input"
+                    placeholder="e.g. 23CSE101 or ADMIN"
+                    required
+                />
+
+                <label class="field-label" for="password">Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    class="field-input"
+                    placeholder="Enter password"
+                    required
+                />
+
+                <button type="submit" class="btn btn-primary">Login</button>
+                <p id="login-error" class="error-text"></p>
+            </form>
+
+            <div class="hint-box">
+                <strong>Demo credentials:</strong><br />
+                Admin → <code>ADMIN / admin123</code><br />
+                Student → <code>23CSE101 / student1</code><br />
+                Students added by Admin → password <code>student123</code><br /><br />
+                Admin modes:<br />
+                • <strong>Teaching</strong> → Marks<br />
+                • <strong>Finance</strong> → Fees (₹3,60,000 fixed)<br />
+                • <strong>Student Mgmt</strong> → Add / Delete<br />
+                • <strong>Attendance Entry</strong> → P/A + Online code<br />
+            </div>
+        </div>
+    </section>
+
+    <!-- STUDENT DASHBOARD -->
+    <section id="student-dashboard" class="page hidden">
+        <header class="top-bar">
+            <div>
+                <h2>Student Dashboard</h2>
+                <p id="student-welcome" class="muted"></p>
+            </div>
+            <div class="top-bar-right">
+                <button id="student-pass-btn" class="btn btn-outline">Update Password</button>
+                <button id="student-logout" class="btn btn-outline">Logout</button>
+            </div>
+        </header>
+
+        <main class="grid">
+            <!-- Profile -->
+            <article class="card">
+                <h3>My Profile</h3>
+                <div class="card-body">
+                    <p><strong>ID:</strong> <span id="st-id">–</span></p>
+                    <p><strong>Roll:</strong> <span id="st-roll">–</span></p>
+                    <p><strong>Name:</strong> <span id="st-name">–</span></p>
+                    <p><strong>Department:</strong> <span id="st-dept">–</span></p>
+                    <p><strong>CGPA:</strong> <span id="st-cgpa">–</span></p>
+                </div>
+            </article>
+
+            <!-- Attendance -->
+            <article class="card">
+                <h3>Attendance</h3>
+                <div class="card-body">
+                    <p><strong>ENGLISH:</strong> <span id="att-eng">–</span></p>
+                    <p><strong>APTITUDE:</strong> <span id="att-apt">–</span></p>
+                    <p><strong>OOPS:</strong> <span id="att-oops">–</span></p>
+                    <p><strong>MATHS:</strong> <span id="att-maths">–</span></p>
+                    <p><strong>CODING SKILLS:</strong> <span id="att-code-subj">–</span></p>
+                </div>
+                <div class="card-body">
+                    <label class="field-label" for="st-att-code">Online Attendance Code</label>
+                    <input
+                        id="st-att-code"
+                        class="field-input"
+                        placeholder="Enter code provided by faculty"
+                    />
+                    <button id="st-att-submit" class="btn btn-primary small">Submit Code</button>
+                    <p id="st-att-msg" class="muted"></p>
+                </div>
+            </article>
+
+            <!-- Marks -->
+            <article class="card">
+                <h3>Marks</h3>
+                <div class="card-body">
+                    <p><strong>ENGLISH:</strong> <span id="m-eng">–</span></p>
+                    <p><strong>APTITUDE:</strong> <span id="m-apt">–</span></p>
+                    <p><strong>OOPS:</strong> <span id="m-oops">–</span></p>
+                    <p><strong>MATHS:</strong> <span id="m-maths">–</span></p>
+                    <p><strong>CODING SKILLS:</strong> <span id="m-code">–</span></p>
+                </div>
+            </article>
+
+            <!-- Fees -->
+            <article class="card">
+                <h3>Fee Status</h3>
+                <div class="card-body">
+                    <p><strong>Total Fee:</strong> <span id="fee-total">–</span></p>
+                    <p><strong>Paid:</strong> <span id="fee-paid">–</span></p>
+                    <p><strong>Due:</strong> <span id="fee-due">–</span></p>
+                </div>
+            </article>
+
+            <!-- Timetable -->
+            <article class="card card-wide">
+                <div class="tt-header-row">
+                    <h3>Today's Timetable</h3>
+                    <span id="tt-status" class="tt-status-pill">Status: -</span>
+                </div>
+                <p id="tt-meta" class="muted"></p>
+                <div class="card-body">
+                    <ul id="tt-list" class="tt-list"></ul>
+                </div>
+            </article>
+        </main>
+    </section>
+
+    <!-- ADMIN DASHBOARD -->
+    <section id="admin-dashboard" class="page hidden">
+        <header class="top-bar">
+            <div>
+                <h2>Admin Dashboard</h2>
+                <p class="muted">Teaching • Finance • Student Management • Attendance</p>
+            </div>
+            <div class="top-bar-right">
+                <button id="admin-att-btn" class="btn btn-outline">Attendance Entry</button>
+                <button id="admin-pass-btn" class="btn btn-outline">Update Password</button>
+                <button id="admin-logout" class="btn btn-outline">Logout</button>
+            </div>
+        </header>
+
+        <main class="admin-layout">
+            <!-- Student list -->
+            <section class="card">
+                <h3>All Students</h3>
+                <div class="card-body table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Roll</th>
+                            <th>Name</th>
+                            <th>Dept</th>
+                            <th>CGPA</th>
+                            <th>Attendance %</th>
+                        </tr>
+                        </thead>
+                        <tbody id="students-table-body"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Admin actions -->
+            <section class="card">
+                <h3>Admin Actions</h3>
+                <div class="card-body">
+                    <p class="muted">Select mode:</p>
+                    <div class="mode-buttons">
+                        <button id="mode-teaching" class="btn btn-primary small">Teaching</button>
+                        <button id="mode-finance" class="btn btn-outline small">Finance</button>
+                        <button id="mode-students" class="btn btn-outline small">Student Mgmt</button>
+                    </div>
+
+                    <!-- Teaching Panel -->
+                    <div id="teaching-panel" class="admin-panel hidden">
+                        <h4>Enter Marks (Teacher)</h4>
+                        <p class="muted">Subjects: ENGLISH, APTITUDE, OOPS, MATHS, CODING SKILLS</p>
+
+                        <label class="field-label">Select Student</label>
+                        <select id="teach-student" class="field-input"></select>
+
+                        <label class="field-label">ENGLISH</label>
+                        <input id="t-eng" type="number" class="field-input" placeholder="0 - 100" />
+
+                        <label class="field-label">APTITUDE</label>
+                        <input id="t-apt" type="number" class="field-input" placeholder="0 - 100" />
+
+                        <label class="field-label">OOPS</label>
+                        <input id="t-oops" type="number" class="field-input" placeholder="0 - 100" />
+
+                        <label class="field-label">MATHS</label>
+                        <input id="t-maths" type="number" class="field-input" placeholder="0 - 100" />
+
+                        <label class="field-label">CODING SKILLS</label>
+                        <input id="t-code" type="number" class="field-input" placeholder="0 - 100" />
+
+                        <button id="btn-save-marks" class="btn btn-primary small">Save Marks</button>
+
+                        <p id="teach-msg" class="muted"></p>
+                    </div>
+
+                    <!-- Finance Panel -->
+                    <div id="finance-panel" class="admin-panel hidden">
+                        <h4>Fee Payment (Finance)</h4>
+                        <p class="muted">Total fee per student is fixed: ₹3,60,000</p>
+
+                        <label class="field-label">Select Student</label>
+                        <select id="fin-student" class="field-input"></select>
+
+                        <div style="margin-top:6px;">
+                            <p><strong>Total Fee:</strong> <span id="fin-total">–</span></p>
+                            <p><strong>Paid:</strong> <span id="fin-paid">–</span></p>
+                            <p><strong>Due:</strong> <span id="fin-due">–</span></p>
+                        </div>
+
+                        <label class="field-label">Amount to Pay Now</label>
+                        <input id="fin-amount" type="number" class="field-input" placeholder="Enter amount" />
+
+                        <button id="btn-fin-pay" class="btn btn-primary small">Pay</button>
+                        <p id="fin-msg" class="muted"></p>
+                    </div>
+
+                    <!-- Student Management Panel -->
+                    <div id="student-panel" class="admin-panel hidden">
+                        <h4>Student Management</h4>
+
+                        <h5 style="font-size:0.85rem; margin-top:4px;">Add Student</h5>
+                        <div class="form-row">
+                            <input id="add-id" class="field-input" placeholder="ID (string)" />
+                            <input id="add-roll" class="field-input" placeholder="Roll" />
+                        </div>
+                        <div class="form-row">
+                            <input id="add-name" class="field-input" placeholder="Name" />
+                            <input id="add-dept" class="field-input" placeholder="Dept (CSE/ECE/...)" />
+                        </div>
+                        <p class="muted" style="margin-top:4px;">Enter initial marks (can be 0, later teacher can update):</p>
+                        <div class="form-row">
+                            <input id="add-eng" class="field-input" placeholder="ENGLISH" />
+                            <input id="add-apt" class="field-input" placeholder="APTITUDE" />
+                        </div>
+                        <div class="form-row">
+                            <input id="add-oops" class="field-input" placeholder="OOPS" />
+                            <input id="add-maths" class="field-input" placeholder="MATHS" />
+                        </div>
+                        <div class="form-row">
+                            <input id="add-code" class="field-input" placeholder="CODING SKILLS" />
+                            <button id="btn-add" class="btn btn-primary small">Add</button>
+                        </div>
+
+                        <h5 style="font-size:0.85rem; margin-top:8px;">Delete Student</h5>
+                        <div class="form-row">
+                            <input id="del-id" class="field-input" placeholder="ID" />
+                            <button id="btn-delete" class="btn btn-danger small">Delete</button>
+                        </div>
+                    </div>
+
+                    <p id="admin-msg" class="muted"></p>
+                </div>
+            </section>
+        </main>
+    </section>
+
+    <!-- PASSWORD MODAL -->
+    <div id="password-modal" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-dialog">
+            <h3 id="pw-modal-title">Change Password</h3>
+            <p id="pw-modal-subtitle" class="muted"></p>
+
+            <label class="field-label">Current Password</label>
+            <input id="pw-old" type="password" class="field-input" />
+
+            <label class="field-label">New Password</label>
+            <input id="pw-new" type="password" class="field-input" />
+
+            <div class="modal-actions">
+                <button id="pw-save" class="btn btn-primary small">Save</button>
+                <button id="pw-cancel" class="btn btn-outline small">Cancel</button>
+            </div>
+            <p id="pw-msg" class="muted"></p>
+        </div>
+    </div>
+
+    <!-- ATTENDANCE ENTRY MODAL -->
+    <div id="attendance-modal" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-dialog">
+            <h3>Attendance Entry</h3>
+            <p class="muted">
+                Select a subject and mark P/A for each student.
+                You can also generate an online attendance code (valid for 1 minute).
+            </p>
+
+            <label class="field-label">Subject (Class)</label>
+            <select id="att-subject-select" class="field-input"></select>
+
+            <div class="att-online-box">
+                <p><strong>Online Attendance Code:</strong> <span id="att-code-display">-</span></p>
+                <p class="muted">Valid for: <span id="att-code-timer">--:--</span></p>
+                <button id="btn-generate-code" class="btn btn-primary small">Generate Code</button>
+            </div>
+
+            <div class="table-wrapper" style="margin-top:10px; max-height:240px;">
+                <table class="data-table">
+                    <thead>
+                    <tr>
+                        <th>Roll</th>
+                        <th>Name</th>
+                        <th>Status (P/A)</th>
+                    </tr>
+                    </thead>
+                    <tbody id="att-student-rows"></tbody>
+                </table>
+            </div>
+
+            <div class="modal-actions">
+                <button id="att-save-btn" class="btn btn-primary small">Save Attendance</button>
+                <button id="att-cancel-btn" class="btn btn-outline small">Close</button>
+            </div>
+            <p id="att-modal-msg" class="muted"></p>
+        </div>
+    </div>
+
+</div>
+
+<!-- External JS -->
+<script src="script.js"></script>
+</body>
+</html>
